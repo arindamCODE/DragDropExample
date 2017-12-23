@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Kendo UI Editor - Image Drag and Drop</title>
+ 
+  <link rel="stylesheet" href="http://cdn.kendostatic.com/2014.1.416/styles/kendo.common.min.css" />
+  <link rel="stylesheet" href="http://cdn.kendostatic.com/2014.1.416/styles/kendo.default.min.css" />
+   
+  <style>
+     
+    html
+    {
+      font: 12px sans-serif;
+    }
+     
+    html,
+    body
+    {
+      height: 100%;
+      padding: 0;
+      margin: 0;
+    }
+     
+    #treeview,
+    #editorWrapper
+    {
+      float: left;
+    }
+     
+    #treeview
+    {
+      width: 200px;
+    }
+     
+    #editorWrapper
+    {
+      width: 600px;
+      position: relative;
+    }
+     
+    #editorWrapper .k-loading-image
+    {
+      display: none;
+    }
+     
+  </style>
+ 
+  <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+  <script src="http://cdn.kendostatic.com/2014.1.416/js/kendo.web.min.js"></script>
+</head>
+<body>
+  <div>
+   
+    <div id="treeview"></div>
+   
+    <div id="editorWrapper">
+      <textarea id="editor" cols="30" rows="10"></textarea>
+    </div>
+   
+  </div>
+  <script>
+     
+    $(function(){
+       
+      var body = $(document.body);
+       
+      var editorWrapper = $("#editorWrapper");
+       
+      function onDragStart(e) {
+        if (!e.sender.dataItem(e.sourceNode).value) {
+          e.preventDefault();
+        } else {
+          kendo.ui.progress(editorWrapper, true);
+        }
+      }
+       
+      function onDrag(e) {
+        if ($(e.dropTarget).closest(editorWrapper)[0]) {
+          e.setStatusClass("k-add");
+        } else {
+          e.setStatusClass("k-denied");
+        }
+      }
+       
+      function onDrop(e) {
+        if ($(e.dropTarget).closest(editorWrapper)[0]) {
+          e.preventDefault();
+          var img = '<img src="' + e.sender.dataItem(e.sourceNode).value + '" alt="image" />';
+          $("#editor").data("kendoEditor").exec("inserthtml", {value: img});
+        }
+        kendo.ui.progress(editorWrapper, false);
+      }
+       
+      $("#treeview").kendoTreeView({
+        dataSource: {
+          data: [
+            {text: "Images", value: null, expanded: true, items: [
+              {text: "Telerik logo", value: "http://www.telerik.com/sfimages/default-source/logos/telerik-logo-reversed.png", spriteCssClass: "k-icon k-i-plus"},
+              {text: "Kendo UI Dojo logo", value: "http://trykendoui.telerik.com/images/logo.png", spriteCssClass: "k-icon k-i-plus"}
+            ]}
+          ]
+        },
+        dataTextField: "text",
+        dataValueField: "value",
+        dragAndDrop: true,
+        dragstart: onDragStart,
+        drag: onDrag,
+        drop: onDrop
+      });
+       
+        $("#editor").kendoEditor({
+        tools: [
+          "insertImage"
+        ]
+      });     
+       
+    });
+     
+  </script>
+</body>
+</html>
